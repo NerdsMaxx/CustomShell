@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include "constants.h"
 
-char* dynalloc_remove_excessives_spaces(char *source);
+char* dynalloc_remove_excessives_spaces(const char *source);
 int get_number_of_words(const char *source);
 char* dynalloc_remove_substring(const char *source, const char *substring);
 void print_int_chars(const char *source);

@@ -1,62 +1,106 @@
 #include "utils.h"
 
-char* dynalloc_remove_excessives_spaces(char *source){
-	char *strings[SMALL_SIZE]; 
-
-	for (int index = 0; index < SMALL_SIZE; strings[index++] = NULL);
-
+char* dynalloc_remove_excessives_spaces(const char *source){
 	int index_source = 0;
-	int index_strings = 0;
-	char *dynalloc_result = calloc(SIZE, sizeof(char));
+	int length_source = strlen(source);
+	
+	char *dynalloc_result = calloc(length_source + 1, sizeof(char));
 	int length_result = 0;
 	strcpy(dynalloc_result, "");
 	
-	for(; index_strings < SMALL_SIZE; ++index_strings){
-		for(; source[index_source] == ' '; ++index_source);
-		strings[index_strings] = source + index_source;
+	while(index_source < length_source){
+		for(; index_source < length_source && source[index_source] == ' '; ++index_source);
+		int index_begin_word = index_source;
 
-		for(; source[index_source] != '\0' && source[index_source] != ' '; ++index_source);
-		
-		int aux_length = length_result + (source + index_source) - strings[index_strings];
-		if(aux_length < SIZE){
-			strncat(dynalloc_result, strings[index_strings], (source + index_source) - strings[index_strings]);
-			length_result = aux_length;
-		}
-		else{
-			if(length_result < SIZE){
-				strncat(dynalloc_result, strings[index_strings], (SIZE) - length_result);
-				length_result = SIZE;
-			}
+		for(; index_source < length_source && source[index_source] != ' '; ++index_source, ++length_result);
+
+		if(index_begin_word >= length_source){
+			continue;
 		}
 
-		if(source[index_source] == '\0' || length_result == SIZE){
-			if(dynalloc_result[length_result - 1] == ' '){
-				dynalloc_result[ length_result - 1] = '\0';
-				--length_result;
-			}
-            
-            return dynalloc_result;
-		}
-		else{
-			if(length_result < SIZE){
+		if(length_result <= length_source){
+			strncat(dynalloc_result, source + index_begin_word, index_source - index_begin_word);
+
+			if(length_result < length_source){
 				strcat(dynalloc_result, " ");
 				++length_result;
 			}
 		}
+		else{
+			length_result = length_result - (index_source - index_begin_word);
+
+			if(length_result < length_source){
+				strncat(dynalloc_result, source + index_begin_word, length_source - length_result);
+				length_result = length_source;
+			}
+		}
+	}
+
+	if(dynalloc_result[length_result - 1] == ' '){
+		dynalloc_result[length_result - 1] = '\0';
+		--length_result;
 	}
 
 	return dynalloc_result;
 }
 
+// char* dynalloc_remove_excessives_spaces(char *source){
+// 	char *strings[SMALL_SIZE]; 
+
+// 	for (int index = 0; index < SMALL_SIZE; strings[index++] = NULL);
+
+// 	int index_source = 0;
+// 	int index_strings = 0;
+// 	char *dynalloc_result = calloc(SIZE, sizeof(char));
+// 	int length_result = 0;
+// 	strcpy(dynalloc_result, "");
+	
+// 	for(; index_strings < SMALL_SIZE; ++index_strings){
+// 		for(; source[index_source] == ' '; ++index_source);
+// 		strings[index_strings] = source + index_source;
+
+// 		for(; source[index_source] != '\0' && source[index_source] != ' '; ++index_source);
+		
+// 		int aux_length = length_result + (source + index_source) - strings[index_strings];
+// 		if(aux_length < SIZE){
+// 			strncat(dynalloc_result, strings[index_strings], (source + index_source) - strings[index_strings]);
+// 			length_result = aux_length;
+// 		}
+// 		else{
+// 			if(length_result < SIZE){
+// 				strncat(dynalloc_result, strings[index_strings], (SIZE) - length_result);
+// 				length_result = SIZE;
+// 			}
+// 		}
+
+// 		if(source[index_source] == '\0' || length_result == SIZE){
+// 			if(dynalloc_result[length_result - 1] == ' '){
+// 				dynalloc_result[ length_result - 1] = '\0';
+// 				--length_result;
+// 			}
+            
+//             return dynalloc_result;
+// 		}
+// 		else{
+// 			if(length_result < SIZE){
+// 				strcat(dynalloc_result, " ");
+// 				++length_result;
+// 			}
+// 		}
+// 	}
+
+// 	return dynalloc_result;
+// }
+
 int get_number_of_words(const char *source){
     int index = 0;
+	int length = strlen(source);
 	int number_of_words = 0;
-	bool is_quote = false;
 
-    while(source[index] != '\0'){
-        for(; source[index] == ' '; ++index);
-        number_of_words += (source[index] != '\0') ? 1 : 0;
-	    for(; source[index] != '\0' && source[index] != ' '; ++index);
+    while(index < length){
+        for(; index < length && source[index] == ' '; ++index);
+        number_of_words += (index < length) ? 1 : 0;
+	    for(; index < length && source[index] != ' '; ++index);
     }
 
     return number_of_words;
@@ -70,7 +114,7 @@ char* dynalloc_remove_substring(const char *source, const char *substring){
 		return NULL;
 	}
 
-	char *dynalloc_result = calloc(SIZE, sizeof(char));
+	char *dynalloc_result = calloc(length_source + 1, sizeof(char));
 	strcpy(dynalloc_result, "");
 
 	int index_start_substring = -1;
