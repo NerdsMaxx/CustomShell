@@ -1,15 +1,14 @@
 #include "shell.h"
 
 void* command_interpreter_thread(void *argument);
-void command_interpreter(char *line, int index_line, int status, bool is_background);
+void command_interpreter(char *line, int length_line, int status);
 void change_directory(const char *argument);
 void exit_shell(int status);
 
 typedef struct {
     char* line;
-    int index_line;
+    int length_line;
     int status;
-    bool is_background;
 } ci_args;
 
 void shell(bool is_thread){
@@ -29,30 +28,20 @@ void shell(bool is_thread){
             dynalloc_remove_excessives_spaces(line), 
             line
         );
-
-        bool is_background = contain_last_substring(line, " &");
-
-        if(is_background){
-            dynalloc_strcpy_and_free_alloc(
-                dynalloc_remove_substring(line, " &"),
-                line
-            );
-        }
 		
         if(is_thread){
             pthread_t thread;
             
             ci_args argument;
             argument.line = line;
-            argument.index_line = index_line;
+            argument.length_line = index_line;
             argument.status = status;
-            argument.is_background = is_background;
 
             pthread_create(&thread, NULL, command_interpreter_thread, &argument);
             pthread_join(thread, NULL);
         }
         else{
-            command_interpreter(line, index_line, status, is_background);
+            command_interpreter(line, index_line, status);
         }
         
 	}
@@ -60,19 +49,29 @@ void shell(bool is_thread){
 
 void* command_interpreter_thread(void *argument){
     ci_args arg = *((ci_args *) argument);
-    command_interpreter(arg.line, arg.index_line, arg.status, arg.is_background);
+    command_interpreter(arg.line, arg.length_line, arg.status);
 
     pthread_exit(NULL);
 }
 
-void command_interpreter(char *line, int index_line, int status, bool is_background){
+void command_interpreter(char *line, int length_line, int status){
     const int command_size = 10;
     char *command[command_size];
 
     bool is_exec = false;
+    bool is_background = false;
 
     if (strcmp(line, "exit") == 0){
         exit_shell(EXIT_SUCCESS);
+    }
+
+    if(contain_last_substring(line, " &")){
+        is_background = true;
+
+        dynalloc_strcpy_and_free_alloc(
+            dynalloc_remove_substring(line, " &"),
+            line
+        );
     }
 
     if (strncmp(line, "cd", 2) == 0){
@@ -84,6 +83,7 @@ void command_interpreter(char *line, int index_line, int status, bool is_backgro
 
     if (strncmp(line, "exec ", 5) == 0 && strlen(line) > 5){
         is_exec = true;
+
         dynalloc_strcpy_and_free_alloc(
             dynalloc_remove_substring(line, "exec "), 
             line
@@ -99,7 +99,7 @@ void command_interpreter(char *line, int index_line, int status, bool is_backgro
         int index_command = 1;
         --number_of_words;
 
-        for (int pos_line = 0; pos_line < index_line; ++pos_line){
+        for (int pos_line = 0; pos_line < length_line; ++pos_line){
             if (line[pos_line] != ' '){
                 continue;
             }
