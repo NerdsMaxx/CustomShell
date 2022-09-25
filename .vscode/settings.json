@@ -1,0 +1,27 @@
+{
+    "editor.formatOnSave": false,
+    "files.associations": {
+        "sysexits.h": "c",
+        "stdlib.h": "c",
+        "array": "c",
+        "atomic": "c",
+        "bit": "c",
+        "*.tcc": "c",
+        "deque": "c",
+        "string": "c",
+        "vector": "c",
+        "algorithm": "c",
+        "memory_resource": "c",
+        "string_view": "c",
+        "memory": "c",
+        "random": "c",
+        "initializer_list": "c",
+        "stdexcept": "c",
+        "tuple": "c",
+        "type_traits": "c",
+        "utility": "c",
+        "new": "c",
+        "unistd.h": "c",
+        "stdbool.h": "c"
+    },
+}
