@@ -58,11 +58,9 @@ void* command_interpreter_thread(void *argument){
 }
 
 void command_interpreter(char *line, int length_line, int status){
-    const int command_size = 10;
-    char *command[command_size];
-
-    bool is_exec = false;
+    
     bool is_background = false;
+    bool is_exec = false;
 
     if (strcmp(line, "exit") == 0){
         exit_shell(EXIT_SUCCESS);
@@ -93,6 +91,8 @@ void command_interpreter(char *line, int length_line, int status){
         );
     }
 
+    const int command_size = 10;
+    char *command[command_size];
     for (int index = 0; index < command_size; command[index++] = NULL);
     command[0] = line;
 
@@ -102,15 +102,15 @@ void command_interpreter(char *line, int length_line, int status){
         int index_command = 1;
         --number_of_words;
 
-        for (int pos_line = 0; pos_line < length_line; ++pos_line){
-            if (line[pos_line] != ' '){
+        for (int index_line = 0; index_line < length_line; ++index_line){
+            if (line[index_line] != ' '){
                 continue;
             }
             
-            line[pos_line] = '\0';
+            line[index_line] = '\0';
             --number_of_words;
             if (index_command < command_size){
-                command[index_command++] = line + pos_line + 1;
+                command[index_command++] = line + index_line + 1;
             }
             
             if (index_command >= command_size || number_of_words == 0){
