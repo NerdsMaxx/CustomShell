@@ -18,10 +18,10 @@ void shell(bool is_thread){
         char line[SIZE];
         bzero(line, SIZE);
 
-        printf("\033[0;32m");
+        printf(GREEN);
         printf(">>> ");
 
-        printf("\033[0;33m");
+        printf(YELLOW);
 
 		int index_line = 0;
 		for (; (line[index_line] = getchar()) != ('\n'); ++index_line);
@@ -68,7 +68,7 @@ void command_interpreter(char *line, int length_line, int status){
         exit_shell(EXIT_SUCCESS);
     }
 
-    if(contain_last_substring(line, " &")){
+    if(is_last_substring(line, " &")){
         is_background = true;
 
         dynalloc_strcpy_and_free_alloc(

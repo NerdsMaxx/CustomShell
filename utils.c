@@ -160,7 +160,7 @@ void dynalloc_strcpy_and_free_alloc(char *dynalloc_source, char *destiny){
 	}
 }
 
-bool contain_last_substring(const char *source, const char *substring){
+bool is_last_substring(const char *source, const char *substring){
 	int length_source = strlen(source);
 	int length_substring = strlen(substring);
 
@@ -168,11 +168,5 @@ bool contain_last_substring(const char *source, const char *substring){
 		return false;
 	}
 
-	for(int index = length_source - length_substring; index >= 0; --index){
-		if(strncmp(source + index, substring, length_substring) == 0){
-			return true;
-		}
-	}
-	
-	return false;
+	return strncmp(source + length_source - length_substring, substring, length_substring) == 0;
 }
