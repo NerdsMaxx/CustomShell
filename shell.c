@@ -1,27 +1,28 @@
 #include "shell.h"
 
+void print_initial_chars();
+void wait_child(int signum);
+void execvp_command(char* command[]);
 void* command_interpreter_thread(void *argument);
-void command_interpreter(char *line, int length_line, int status);
+void command_interpreter(char *line, int length_line);
 void change_directory(const char *argument);
 void exit_shell(int status);
 
 typedef struct {
     char* line;
     int length_line;
-    int status;
 } ci_args;
 
 void shell(bool is_thread){
-    int status = 0;
+    printf(GREEN);
+    printf("Bem-vindo ao shell!!!\n\n");
     
+    print_initial_chars();
+
 	while (true){
         char line[SIZE];
         bzero(line, SIZE);
 
-        printf(GREEN);
-        printf(">>> ");
-
-        printf(YELLOW);
 
 		int index_line = 0;
 		for (; (line[index_line] = getchar()) != ('\n'); ++index_line);
@@ -38,26 +39,45 @@ void shell(bool is_thread){
             ci_args argument;
             argument.line = line;
             argument.length_line = index_line;
-            argument.status = status;
 
             pthread_create(&thread, NULL, command_interpreter_thread, &argument);
             pthread_join(thread, NULL);
         }
         else{
-            command_interpreter(line, index_line, status);
+            command_interpreter(line, index_line);
         }
         
 	}
 }
 
+void print_initial_chars(){
+    printf(GREEN);
+    printf("\n>> ");
+
+    printf(YELLOW);
+}
+
+void wait_child(int signum){
+    if(wait(NULL) != -1){
+        print_initial_chars();
+    };
+}
+
+void execvp_command(char* command[]){
+    if (execvp(command[0], command) == -1){
+        printf("Nao tem como executar o comando.\n");
+        exit(EXIT_FAILURE);
+    }
+}
+
 void* command_interpreter_thread(void *argument){
     ci_args arg = *((ci_args *) argument);
-    command_interpreter(arg.line, arg.length_line, arg.status);
+    command_interpreter(arg.line, arg.length_line);
 
     pthread_exit(NULL);
 }
 
-void command_interpreter(char *line, int length_line, int status){
+void command_interpreter(char *line, int length_line){
     
     bool is_background = false;
     bool is_exec = false;
@@ -75,13 +95,6 @@ void command_interpreter(char *line, int length_line, int status){
         );
     }
 
-    if (strncmp(line, "cd", 2) == 0){
-        if(line[2] == '\0' || line[2] == ' '){
-            change_directory((line[2] == '\0') ? line + 2 : line + 3);
-            return;
-        }
-    }
-
     if (strncmp(line, "exec ", 5) == 0 && strlen(line) > 5){
         is_exec = true;
 
@@ -89,6 +102,14 @@ void command_interpreter(char *line, int length_line, int status){
             dynalloc_remove_substring(line, "exec "), 
             line
         );
+    }
+
+    if (strncmp(line, "cd", 2) == 0){
+        if(line[2] == '\0' || line[2] == ' '){
+            change_directory((line[2] == '\0') ? line + 2 : line + 3);
+            print_initial_chars();
+            return;
+        }
     }
 
     const int command_size = 10;
@@ -120,21 +141,21 @@ void command_interpreter(char *line, int length_line, int status){
     }
 
     if (is_exec){
-        if(execvp(command[0], command) == -1){
-            printf("Nao tem como executar o comando.\n");
-        }
+            execvp_command(command);
     }
     else {
         if (fork() == 0){
-            if (execvp(command[0], command) == -1){
-                printf("Nao tem como executar o comando.\n");
-                exit(EXIT_FAILURE);
-            }
+            execvp_command(command);
         }
     }
+
     
-    if(!is_background){
-        wait(&status);
+    
+    if(is_background){
+        signal(SIGCHLD, wait_child);
+    }
+    else{
+        wait_child(0);
     }
 }
 
