@@ -18,7 +18,10 @@ void shell(bool is_thread){
         char line[SIZE];
         bzero(line, SIZE);
 
+        printf("\033[0;32m");
         printf(">>> ");
+
+        printf("\033[0;33m");
 
 		int index_line = 0;
 		for (; (line[index_line] = getchar()) != ('\n'); ++index_line);
