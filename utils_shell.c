@@ -20,7 +20,7 @@ void change_option_for_wait(int option_arg){
 }
 
 void wait_child_pid(int signum){
-    waitpid(pid, NULL, option);
+	waitpid(pid, NULL, option);
 }
 
 void execvp_command(char* command[]){
