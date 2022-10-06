@@ -12,24 +12,22 @@ typedef struct {
 void shell(bool is_thread){
     printf(YELLOW);
     printf("Bem-vindo ao shell!!!\n\n");
-    
-    print_initial_chars();
 
 	while (true){
-        char line[SIZE];
-        bzero(line, SIZE);
+        char line[SIZE + 1];
+        bzero(line, SIZE + 1);
 
+        print_initial_chars();
 
 		int index_line = 0;
-		for (; (line[index_line] = getchar()) != ('\n'); ++index_line);
+		for (; index_line < SIZE && (line[index_line] = getchar()) != ('\n'); ++index_line);
 		line[index_line] = '\0';
-
+        
         char* result = dynalloc_remove_excessives_spaces(line);
 
         if (strcmp(result, "") == 0) {
             dynalloc_delete(result);
             print_error_command();
-            print_initial_chars();
             continue;
         }
 
@@ -77,7 +75,6 @@ void command_interpreter(char *line, int length_line){
         if(strcmp(result, "") == 0){
             dynalloc_delete(result);
             print_error_command();
-            print_initial_chars();
             return;
         }
 
@@ -95,7 +92,6 @@ void command_interpreter(char *line, int length_line){
         if(strcmp(result, "") == 0){
             dynalloc_delete(result);
             print_error_command();
-            print_initial_chars();
             return;
         }
 
@@ -110,7 +106,6 @@ void command_interpreter(char *line, int length_line){
     if (strncmp(line, "cd", 2) == 0) {
         if (line[2] == '\0' || line[2] == ' ') {
             change_directory((line[2] == '\0') ? line + 2 : line + 3);
-            print_initial_chars();
             return;
         }
     }
@@ -155,9 +150,11 @@ void command_interpreter(char *line, int length_line){
 
     change_pid_for_wait(pid);
     if (is_background){
+        change_option_for_wait(1);
         signal(SIGCHLD, wait_child_pid);
     }
     else {
+        change_option_for_wait(0);
         wait_child_pid(0);
     }
 }

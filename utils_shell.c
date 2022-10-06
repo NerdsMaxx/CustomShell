@@ -9,14 +9,24 @@ void print_error_command(void){
 }
 
 static pid_t pid = -1;
+static int option = 0;
 
 void change_pid_for_wait(pid_t pid_arg){
     pid = pid_arg;
 }
 
+void change_option_for_wait(int option_arg){
+    option = option_arg;
+}
+
 void wait_child_pid(int signum){
-    if(waitpid(pid, NULL, WNOHANG) != -1){
-        print_initial_chars();
+    const pid_t pid_aux = pid;
+    const int option_aux = option;
+    
+    if(waitpid(pid, NULL, option) != pid){
+        if(option_aux == 1){
+            print_initial_chars();
+        }
     };
 }
 
@@ -32,7 +42,7 @@ void change_directory(const char *argument){
 
 	if(number_of_words == 1){
 		if(chdir(argument) == 0){
-			char directory[SIZE];
+			char directory[SIZE + 1];
 			strcpy(directory, "");
 			printf("Mudando para diretorio %s\n", getcwd(directory, SIZE));
 		}
