@@ -27,7 +27,6 @@ void shell(bool is_thread){
 
         if (strcmp(result, "") == 0) {
             dynalloc_delete(result);
-            print_error_command();
             continue;
         }
 
@@ -65,7 +64,7 @@ void command_interpreter(char *line, int length_line){
     bool is_background = false;
     bool is_exec = false;
 
-    if (strcmp(line, "exit") == 0) {
+    if (strncmp(line, "exit", 4) == 0) {
         exit_shell(EXIT_SUCCESS);
     }
 

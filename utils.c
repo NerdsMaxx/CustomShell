@@ -73,7 +73,6 @@ char* dynalloc_remove_substring(const char *source, const char *substring){
 	}
 
 	int index_start_substring = -1;
-	int index_result = 0;
 	int limit = (length_source - length_substring) + 1;
 	for(int index_source = 0; index_source < length_source; ++index_source){
 		if(index_source < limit && strncmp(source + index_source, substring, length_substring) == 0){
@@ -81,7 +80,7 @@ char* dynalloc_remove_substring(const char *source, const char *substring){
 			index_source = index_start_substring + length_substring - 1;
 		}
 		else{
-			dynalloc_result[index_result++] = source[index_source];
+			strncat(dynalloc_result, source + index_source, 1);
 		}
 	}
 

@@ -1,7 +1,7 @@
 #include "utils_shell.h"
 
 void print_initial_chars(void){
-    printf("\n>> ");
+    printf("\n>>> ");
 }
 
 void print_error_command(void){
@@ -20,14 +20,7 @@ void change_option_for_wait(int option_arg){
 }
 
 void wait_child_pid(int signum){
-    const pid_t pid_aux = pid;
-    const int option_aux = option;
-    
-    if(waitpid(pid, NULL, option) != pid){
-        if(option_aux == 1){
-            print_initial_chars();
-        }
-    };
+    waitpid(pid, NULL, option);
 }
 
 void execvp_command(char* command[]){
