@@ -2,5 +2,6 @@
 
 int main(void)
 {
-    shell(false);
+    bool is_thread = true;
+    shell(is_thread);
 }
