@@ -1,5 +1,6 @@
 #include "utils.h"
 
+
 char* dynalloc_remove_excessives_spaces(const char *source){
 	int index_source = 0;
 	int length_source = strlen(source);
