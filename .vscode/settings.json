@@ -22,6 +22,7 @@
         "utility": "c",
         "new": "c",
         "unistd.h": "c",
-        "stdbool.h": "c"
+        "stdbool.h": "c",
+        "limits": "c"
     },
 }
