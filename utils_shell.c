@@ -2,7 +2,7 @@
 
 //Imprimir >>> no shell antes do usuário digitar.
 void print_initial_chars(void){
-    printf("\n>>> ");
+    printf("\n%s@shell >>> ", getenv("USER"));
 }
 
 //Imprimir erro de comando caso não consiga executar o comando.
